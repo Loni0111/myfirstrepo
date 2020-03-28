@@ -1,0 +1,173 @@
+---
+title: 'myfirstrepo'
+author: "Loni"
+date: "1/4/2020"
+output: pdf_document
+---
+```{r}
+library("ggplot2")
+```
+
+```{r}
+roll <- function(){
+  die <- 1:6
+  dice <- sample(die, size = 2, replace = T)
+  sum(dice)
+}
+```
+
+
+```{r}
+x <- c(1,2,2,2,3,3)
+qplot(x, binwidth = 1)
+```
+```{r}
+x2 <- c(1,1,1,1,1,2,2,2,2,3,3,4)
+qplot(x2, binwidth = 0.5)
+````
+
+```{r}
+rolls <- replicate(10000,roll())
+qplot(rolls, binwidth = 1)
+```
+```{r}
+#加权
+roll_weight <- function(){
+  die <- 1:6
+  dice <- sample(die, size = 2, replace = T, 
+                 prob = c(1/8, 1/8, 1/8, 1/8, 1/8, 3/8))
+  sum(dice)
+}
+rolls_weight <- replicate(10000,roll_weight())
+qplot(rolls_weight, binwidth = 1)
+```
+
+```{r}
+# 1st: 生成一组扑克牌的牌面名称，并将它们放在一个一维向量中
+hand <- c("ace","king","queen","jack","ten")
+hand
+typeof(hand)
+# 2nd: 一个二维表格型数据，其中既有扑克牌排面信息，也有花色的信息。以原子型向量为基础，赋予它一些属性（attribute）和类（class）
+```
+
+## 3.2.1 名称属性（1），name
+```{r}
+die <- 1:6
+names(die) <- c("one","two","three","four","five","six") #die就具有了名称属性
+attributes(die)
+```
+```{r}
+die
+
+#名称属性值并不会对向量中的实际值产生影响
+die + 1
+```
+```{r}
+#可以使用names函数批量修改或者删除某个对象的名称属性
+names(die) <- c("uno","dos","tres","quatro","cinco","seis")
+die
+#要想一次性删除名称属性值，需要将NULL赋给names函数
+names(die) <- NULL
+die
+```
+
+## 3.2.2 维度属性（2），dim
+```{r}
+# 原子型向量可以转换成一个n维数组（array）
+#使用dim(),第一个值赋给行数，第二个赋给列数；行的优先权高于列
+#dim是以列优先顺序（第一列排满再跳到第二列）；
+dim(die) <- c(2,3)
+die
+dim(die) <- c(3,2)
+die
+#组成一个超立方体1*2*3（一行两列三个切片）
+dim(die) <-c(1,2,3)
+die
+#dim是以列优先顺序（第一列排满再跳到第二列）。如果想操控这样的排列过程，可以使用辅助函数 matrix 或 array
+```
+
+## 3.3 矩阵
+```{r}
+n <- matrix(die,nrow = 2)
+n
+n <- matrix(die,nrow = 2,byrow=T) # byrow =T, 可以将其排列方式改为按照行优先的顺序进行排列
+n
+```
+
+## 3.4 数组
+```{r}
+ar <- array(c(11:14, 21:24, 31:34), dim = c(2,2,3))
+ar
+```
+```{r}
+hand1 <- c("ace","king","queen","jack","ten","spades","spades","spades","spades","spades")
+# first way
+dim(hand1) <- c(5,2)
+hand1
+# second way
+matrix(hand1,ncol=2)
+hand1
+matrix(hand1,nrow=5)
+hand1
+# third way
+array(hand1,dim = c(5,2))
+```
+
+## 3.5类
+```{r}
+dim(die) <- c(2,3)
+typeof(die)
+class(die)
+```
+
+### 3.5.1 日期与时间
+```{r}
+library(tidyverse)
+now <- Sys.time()
+now
+typeof(now)
+class(now)
+```
+```{r}
+unclass(now)
+```
+```{r}
+mil <- 1000000
+class(mil) <- c("POSIXct","POSIXt" )
+mil
+```
+
+### 3.5.2 因子factor
+```{r}
+gender <- factor(c("male","female","female","male"))
+typeof(gender) 
+#因子的存在，使得在统计模型中加入分类变量变得更加容易，因为这些分类变量已经被编码成一些数值，但是，因子容易使人产生困惑，因为它看起来像是字符串，但却变现为整数值
+attributes(gender)
+```
+```{r}
+#uncalss()，可以看到R到底是如何存储因子的
+unclass(gender) 
+```
+```{r}
+gender
+```
+
+```{r}
+# 可以用as.character函数将一个因子强制转换成字符串，摒弃内存中的整数值信息
+as.character(gender)
+```
+```{r}
+# 原子型向量只能储存一种类型的数据，所以R会将三个元素都强制转换成字符型
+card <- c("ace","hearts",1)
+card
+```
+```{r}
+#如果尝试把不同类型的数据都塞进一个向量，R会将它们转换成同一种类型的数据
+```
+
+## 3.6 强制转换 coercion
+```{r}
+sum(c(TRUE,TRUE,FALSE,FALSE))
+sum(c(T,T,F,F))
+```
+
